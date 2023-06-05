@@ -1,6 +1,8 @@
 /// <reference types="Cypress" /> 
 
     describe('Central de Atendimento ao Cliente TAT',  function() {
+        const THREE_SECONDS_IN_MS = 3000
+
         beforeEach( function() {
             cy.visit('./src/index.html')
         })
@@ -162,6 +164,26 @@
                 .selectFile('@sampleFile')
             })
 
+        
+        it('clock', function() {
+                const longText = 'ao instalar a versão do Cypress pelo npm tive problemas com o cache por ja ter outra versão instalada então fui no caminho C:\Users\kmds\AppData\Local\Cypress e apaguei a pasta cache e instalei novamente pelo cmd com o npm.'
+                
+                cy.clock()
+
+                cy.get('#firstName').type('Walmyr')
+                cy.get('#lastName').type('Filho')
+                cy.get('#phone-checkbox').check()
+                cy.get('#phone').type('1234567890')
+                cy.get('#email').type('walmyr@exemplo.com')
+                cy.get('#open-text-area').type(longText, {delay: 0})
+                cy.get('button[type="submit"]').click()
+                cy.get('.success').should('be.visible')
+                cy.tick(THREE_SECONDS_IN_MS)
+                cy.get('.success').should('not.be.visible')
+            })
+        
+
+
         it('verifica que a politica de privacidade abre em outra aba sem a necessidade de um clique', function() {
             cy.get('#privacy a').should('have.attr', 'target', '_blank') 
         })
@@ -209,6 +231,17 @@
                 .invoke('text', 'CAT TAT')
             cy.get('#subtitle')
                 .invoke('text', 'Aprendendo cypress na prática')
+        })
+
+        Cypress._.times(3, function(){
+            it('acessa a politica de privacidade removendo o target e então clicando no link', function() {
+                cy.get('#privacy a')
+                    .invoke('removeAttr', 'target')
+                    .click()
+                cy.contains('Talking About Testing').should('be.visible')
+            })
+    
+
         })
 
 });
